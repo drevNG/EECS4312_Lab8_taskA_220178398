@@ -1,0 +1,33 @@
+Prompt 1:
+I am implementing a meeting appointment slot recommender system.
+
+The system suggests available meeting slots based on working hours, busy intervals, meeting duration, buffer time, and an optional candidate window.
+
+Two personas influence the system requirements:
+
+Persona 1 – Jane Adams (Primary User)
+
+-Busy professional who prefers automation and minimal interaction
+-Expects predictable and stable system behavior
+-Wants the system to automatically resolve scheduling conflicts
+-Dislikes excessive notifications or duplicate outputs
+
+Persona 2 – Mo Rodriguez (Edge User)
+
+-Requires deterministic and consistent system behavior
+-Carefully reviews system outputs and expects clear handling of edge cases
+-Experiences stress when system decisions appear arbitrary or unexplained
+-Wants explicit handling of errors instead of silent failures
+
+Based on these personas, what types of system constraints might be derived for a scheduling system like this?
+Please focus on constraints related to reliability, determinism, error handling, and predictable system behavior.
+
+
+Purpose:
+To confirm that the constraints derived from the personas capture reliability, determinism, and edge case handling.
+
+Response Summary:
+The LLM suggested constraints related to deterministic ordering, conflict resolution, and explicit handling of edge cases.
+
+Decision:
+Accepted as brainstorming guidance and used to validate the constraints derived manually.

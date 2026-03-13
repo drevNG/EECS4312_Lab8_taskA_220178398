@@ -1,0 +1,161 @@
+--------------------------------------------------
+## 1. Problem Understanding
+--------------------------------------------------
+
+System purpose:
+The system suggests available meeting time slots within a given day while respecting scheduling constraints such as working hours, busy intervals, meeting duration, buffers, and optional candidate windows.
+
+Inputs to the system:
+- day (date): The calendar day for which meeting slots are requested.
+- working_hours (TimeWindow): Defines the start and end time during which meetings may be scheduled.
+- busy_intervals (List[BusyInterval]): Existing commitments that prevent meetings from being scheduled during those times.
+- duration (timedelta): The required meeting length.
+- n (integer): Maximum number of meeting slot suggestions to return.
+- buffer (timedelta, optional): Buffer time required before and after busy intervals.
+- candidate_window (TimeWindow, optional): Restricts suggestions to a smaller time window.
+
+Outputs produced by the system:
+A list of Slot objects representing valid meeting start times that satisfy all scheduling constraints.
+
+Primary goal of the system:
+Generate deterministic, conflict-free meeting slot suggestions that respect all constraints and handle edge cases consistently.
+
+--------------------------------------------------
+## 2. Assumptions
+--------------------------------------------------
+
+A1: All scheduling occurs within a single calendar day.
+
+A2: Working hours always have a valid range where start time is earlier than end time.
+
+A3: Busy intervals represent existing commitments and must have start < end.
+
+A4: Meeting duration is expected to be positive.
+
+A5: Busy intervals may be unsorted or overlapping when provided as input.
+
+A6: If no valid meeting slots exist, the system returns an empty list instead of failing.
+
+--------------------------------------------------
+## 3. Functional Requirements
+--------------------------------------------------
+
+FR1: The system shall generate meeting slot suggestions within the specified working hours.
+
+FR2: The system shall avoid scheduling meetings that overlap with any busy interval or buffer period.
+
+FR3: The system shall generate slot suggestions that satisfy the specified meeting duration.
+
+FR4: The system shall return at most n valid meeting slot suggestions.
+
+FR5: The system shall return meeting slots in deterministic chronological order.
+
+FR6: The system shall correctly handle unsorted or overlapping busy intervals when generating slot suggestions.
+
+--------------------------------------------------
+## 4. System Constraints
+--------------------------------------------------
+
+C1:
+Derived from persona attribute: Jane prefers predictable and stable ordering of system decisions.
+Constraint: The system must return suggested slots in deterministic chronological order.
+
+C2:
+Derived from persona attribute: Jane expects the system to automatically resolve scheduling conflicts.
+Constraint: The system must not generate slots that overlap with busy intervals or buffer periods.
+
+C3:
+Derived from persona attribute: Mo requires deterministic behavior when reviewing system outputs.
+Constraint: The system must produce identical results when the same inputs are provided multiple times.
+
+C4:
+Derived from persona attribute: Mo becomes frustrated when outcomes appear arbitrary.
+Constraint: The system must consistently apply the same scheduling rules for identical inputs.
+
+C5:
+Derived from persona attribute: Jane prefers minimal unnecessary outputs.
+Constraint: The system must limit results to the requested maximum number of suggestions n.
+
+C6:
+Derived from persona attribute: Mo is concerned about silent failures.
+Constraint: The system must return an empty result when no valid meeting slots exist.
+
+--------------------------------------------------
+## 5. Acceptance Criteria
+--------------------------------------------------
+
+AC1:
+Given working hours from 09:00 to 12:00 and no busy intervals
+When meeting slots are generated for a 30-minute meeting
+Then the system returns valid slots starting from the earliest possible time.
+
+AC2:
+Given a busy interval from 10:00 to 10:30
+When meeting slots are generated
+Then no suggested slot overlaps with the busy interval.
+
+AC3:
+Given identical inputs to the scheduling system
+When the system generates meeting slots multiple times
+Then the outputs must be identical and ordered consistently.
+
+AC4:
+Given a request for n = 3 slot suggestions
+When more than three valid slots exist
+Then the system returns only the first three suggestions.
+
+AC5:
+Given busy intervals covering the entire working window
+When meeting slots are requested
+Then the system returns an empty list.
+
+AC6:
+Given unsorted or overlapping busy intervals
+When the system generates meeting slots
+Then the system correctly handles and avoids invalid scheduling conflicts.
+
+--------------------------------------------------
+## 6. Edge Cases
+--------------------------------------------------
+
+EC1:
+Description: Busy intervals cover the entire working window.
+Expected system behavior: The system returns an empty list of meeting slots.
+
+EC2:
+Description: Meeting duration is longer than any available gap between busy intervals.
+Expected system behavior: The system returns no valid slot suggestions.
+
+EC3:
+Description: Busy intervals are provided in unsorted or overlapping order.
+Expected system behavior: The system correctly processes the intervals and avoids invalid scheduling.
+
+--------------------------------------------------
+## 7. Traceability
+--------------------------------------------------
+
+FR1 → C2 → AC2
+
+FR2 → C2 → AC2
+
+FR3 → C4 → AC3
+
+FR4 → C5 → AC4
+
+FR5 → C1 → AC3
+
+FR6 → C4 → AC6
+
+--------------------------------------------------
+## Revision Notes
+--------------------------------------------------
+
+Revision Note 1
+Requirement updated: AC1 wording clarification
+Reason: During the requirements review the LLM identified ambiguity in the phrase "earliest possible time".
+Action: Clarified that the earliest slot must satisfy working hours and scheduling constraints.
+
+Revision Note 2
+Requirement updated: EC handling of boundary conditions
+Reason: The LLM suggested additional edge cases such as meetings that exactly fit available gaps or buffer periods eliminating gaps.
+Action: Confirmed that these scenarios are handled by the scheduling logic and included them as edge case considerations.
