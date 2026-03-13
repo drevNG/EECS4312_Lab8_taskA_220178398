@@ -67,7 +67,7 @@ def assert_slots_basic_constraints(
 
 
 # ---------- Tests ----------
-
+# Covers C1, AC1
 def test_a1_no_busy_simple_slots():
     """
     Like original "single med exact times": here, no busy events.
@@ -94,7 +94,7 @@ def test_a1_no_busy_simple_slots():
     # Earliest slot should be at or after working start
     assert out[0].start_time >= time(9, 0)
 
-
+# Covers C3, C4, AC3
 def test_a2_deterministic_same_inputs_same_outputs():
     """
     Like original tie/determinism check: same inputs must return identical outputs.
@@ -114,7 +114,7 @@ def test_a2_deterministic_same_inputs_same_outputs():
     assert [s.start_time for s in out1] == [s.start_time for s in out2]
     assert_slots_basic_constraints(out1, day, working, busy, duration, 10, buffer, None)
 
-
+# Covers C2, AC6
 def test_a3_overlapping_and_unsorted_busy_intervals_handled():
     """
     Busy intervals may be unsorted/overlapping; suggestions must still avoid conflicts.
@@ -131,7 +131,7 @@ def test_a3_overlapping_and_unsorted_busy_intervals_handled():
     out = suggest_slots(day, working, busy, duration, n=8, buffer=timedelta(0), candidate_window=None)
     assert_slots_basic_constraints(out, day, working, busy, duration, 8, timedelta(0), None)
 
-
+# Covers C2, AC2
 def test_a4_candidate_window_respected():
     """
     Like original allowed_window respected: here we add an extra candidate window restriction.
@@ -148,7 +148,7 @@ def test_a4_candidate_window_respected():
     # Every slot must start within candidate window
     assert all(candidate.start <= s.start_time < candidate.end for s in out)
 
-
+# Covers C2, AC2
 def test_a5_buffer_eliminates_small_gaps():
     """
     Like original rate-limit constraint: here buffer is the key extra constraint.
@@ -179,6 +179,7 @@ def test_a5_buffer_eliminates_small_gaps():
 #################################################################################
 # Add your own additional tests here to cover more cases and edge cases as needed.
 #################################################################################
+# Covers C6, AC5
 def test_no_slots_when_busy_covers_working_window():
     day = date(2026, 1, 1)
 
@@ -195,7 +196,7 @@ def test_no_slots_when_busy_covers_working_window():
 
     assert slots == []
 
-
+# Covers C6, AC5
 def test_duration_longer_than_any_gap():
     day = date(2026, 1, 1)
 
@@ -211,7 +212,7 @@ def test_duration_longer_than_any_gap():
 
     assert slots == []
 
-
+# Covers C5, C7, AC4
 def test_n_zero_returns_empty_list():
     day = date(2026, 1, 1)
 
@@ -225,7 +226,7 @@ def test_n_zero_returns_empty_list():
 
     assert slots == []
 
-
+# Covers C8, AC5
 def test_non_positive_duration_returns_empty_list():
     day = date(2026, 1, 1)
 
@@ -258,6 +259,7 @@ def test_non_positive_duration_returns_empty_list():
 
 #     assert_slots_basic_constraints(slots, working, busy, duration)
 
+# Covers C2, AC6
 def test_busy_intervals_outside_working_hours_are_clipped():
     day = date(2026, 1, 1)
 
@@ -285,7 +287,7 @@ def test_busy_intervals_outside_working_hours_are_clipped():
         None
     )
 
-
+# Covers C6, AC5
 def test_adjacent_busy_intervals_leave_no_gap():
     day = date(2026, 1, 1)
 
@@ -303,7 +305,7 @@ def test_adjacent_busy_intervals_leave_no_gap():
 
     assert slots == []
 
-
+# Covers C2, AC2
 def test_candidate_window_no_intersection_with_working_hours():
     day = date(2026, 1, 1)
 
@@ -321,6 +323,7 @@ def test_candidate_window_no_intersection_with_working_hours():
 
 # Additional three test cases
 
+# Covers C2, AC2
 def test_buffer_completely_blocks_small_gap():
     """
     Buffer significantly reduces available time but still leaves a valid slot.
@@ -353,6 +356,7 @@ def test_buffer_completely_blocks_small_gap():
     # The only valid slot should start at 9:50
     assert slots[0].start_time == time(9, 50)
 
+# Covers C2, AC2
 def test_candidate_window_inside_gap():
     """
     Candidate window should restrict suggestions even when a larger gap exists.
@@ -389,7 +393,7 @@ def test_candidate_window_inside_gap():
         candidate
     )
 
-
+# Covers C5, C7, AC4
 def test_large_n_returns_only_available_slots():
     """
     If n is very large, function should only return the available slots.
